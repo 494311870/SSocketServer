@@ -4,12 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SSocketServer
+namespace SServer.Common.Specification
 {
-    class Program
+    public interface IClient
     {
-        static void Main(string[] args)
-        {
-        }
+        void SendMessage(byte[] message);
     }
 }
