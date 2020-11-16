@@ -10,12 +10,12 @@ namespace SSocketServer.Servers
     /// 对等客户端
     /// 用来保持和客户端建立的连接
     /// </summary>
-    class Client:IClient
+    class Client : IClient
     {
         public bool CanUse { get; private set; } = true;
         public TcpClient TcpClient { get; } = new TcpClient();
 
-        public Server Server { get;}
+        public Server Server { get; }
         private Message Message { get; } = new Message();
         private NetworkStream Stream { get; set; }
 
@@ -42,6 +42,7 @@ namespace SSocketServer.Servers
             TcpClient.Client = null;
             Stream = null;
             CanUse = true;
+
         }
 
         // 接受客户端发送的消息
@@ -64,10 +65,24 @@ namespace SSocketServer.Servers
 
         public void SendMessage(byte[] message)
         {
+            Console.WriteLine("正在向客户端发送消息");
             TcpClient.Client.Send(message);
         }
 
-        async Task ParseAsync(byte[] bytes) => await Task.Run(() => Server.Parse(bytes, this));
+        async Task ParseAsync(byte[] bytes)
+        {
+            await Task.Run(() =>
+            {
+                try
+                {
+                    Server.Parse(bytes, this);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
+            });
+        }
     }
 
 }

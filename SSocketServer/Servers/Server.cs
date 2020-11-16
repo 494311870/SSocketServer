@@ -11,6 +11,7 @@ using SServer.Common.Tools;
 using SSocketServer.Controller;
 using SServer.Common.Protocol;
 using SServer.Common.Model;
+using SSocketServer.Manager;
 
 namespace SSocketServer.Servers
 {
@@ -18,7 +19,7 @@ namespace SSocketServer.Servers
     class Server
     {
         public static Server Instance { get; private set; }
-        public readonly int MaxConnection = 100;
+        public readonly int MaxConnection = 5;
         /// <summary>
         /// 连接池 
         /// </summary>
@@ -35,7 +36,7 @@ namespace SSocketServer.Servers
         /// </summary>
         /// <param name="ip">ip地址</param>
         /// <param name="port">端口号</param>
-        public Server(string ip, int port) => Listener = new TcpListener(IPAddress.Parse(ip), port);
+        public Server(string ip, int port) : this(IPAddress.Parse(ip), port) { }
         public Server(IPAddress localaddr, int port) => Listener = new TcpListener(localaddr, port);
         public Server(IPEndPoint localEP) => Listener = new TcpListener(localEP);
 
@@ -90,10 +91,21 @@ namespace SSocketServer.Servers
         {
             await Task.Run(() =>
             {
-                Console.WriteLine("服务器处理了一条请求");
-                var response = ControllerManager.RequestHandler(request);
-                Console.WriteLine(response.Json);
-                client.SendMessage(Message.GetBytes(response));
+                try
+                {
+                    Console.WriteLine("服务器处理了一条请求");
+                    var response = ControllerManager.RequestHandler(request);
+                    Console.WriteLine(response.Json);
+                    client.SendMessage(Message.GetBytes(response));
+
+                    throw new Exception("?????");
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    throw e;
+                }
+
             });
         }
 
@@ -102,7 +114,16 @@ namespace SSocketServer.Servers
             await Task.Run(() =>
             {
                 Console.WriteLine("服务器处理了一条响应");
-                ControllerManager.ResponseHandler(response);
+                try
+                {
+                    ControllerManager.ResponseHandler(response);
+
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+
+                }
             });
         }
 

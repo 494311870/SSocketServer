@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 using SServer.Common.Protocol;
 using SServer.Common.Specification;
 using System.Reflection;
+using SSocketServer.Controller;
+using SSocketServer.Attributes;
 
-namespace SSocketServer.Controller
+namespace SSocketServer.Manager
 {
     /// <summary>
     /// 相当于路由映射
@@ -15,7 +17,7 @@ namespace SSocketServer.Controller
     class ControllerManager
     {
 
-        private Dictionary<RequestAndResponseCode, BaseController> ControllerDict { get; } = new Dictionary<RequestAndResponseCode, BaseController>();
+        private Dictionary<RequestCode, BaseController> ControllerDict { get; } = new Dictionary<RequestCode, BaseController>();
         public Type RequestMappingAttributeType { get; } = typeof(RequestMappingAttribute);
 
         public ControllerManager() => Init();

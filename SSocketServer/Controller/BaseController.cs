@@ -10,7 +10,7 @@ namespace SSocketServer.Controller
 {
     abstract class BaseController
     {
-        public RequestAndResponseCode ProtocolCode { get; set; }
+        public RequestCode ProtocolCode { get; set; }
         /// <summary>
         /// 提供一个默认的虚方法
         /// </summary>

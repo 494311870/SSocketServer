@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SServer.Common.Specification;
 using SServer.Common.Protocol;
+using LitJson;
 
 namespace SServer.Common.Model
 {
@@ -12,25 +13,16 @@ namespace SServer.Common.Model
     public class Response : IResponse
     {
         public int Id { get; set; }
-        public RequestAndResponseCode ResponseCode { get; set; }
+        //public RequestCode ResponseCode { get; set; }
         public StatusCode StatusCode { get; set; }
         //public object[] Data { get; set; }
         public string Json { get; set; }
 
-        public Response(int id, RequestAndResponseCode responseCode, StatusCode statusCode, string json)
-        {
-            Id = id;
-            ResponseCode = responseCode;
-            StatusCode = statusCode;
-            //Data = data;
-            Json = json;
-        }
-        public Response(RequestAndResponseCode responseCode, StatusCode statusCode, string json)
-        {
-            ResponseCode = responseCode;
-            StatusCode = statusCode;
-            Json = json;
-        }
+        public Response(int id, StatusCode statusCode, string json) : this(statusCode, json) => Id = id;
+        public Response(StatusCode statusCode, string json) : this(statusCode) => Json = json;
+        public Response(StatusCode statusCode, object data) : this(statusCode) => Json = JsonMapper.ToJson(data);
+
+        public Response(StatusCode statusCode) => StatusCode = statusCode;
 
         //public IResponse Create(RequestAndResponseCode responseCode, StatusCode statusCode, string json)
         //    => new Response(responseCode, statusCode, json);

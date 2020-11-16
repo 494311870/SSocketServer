@@ -14,7 +14,7 @@ namespace SServer.Common.Specification
         /// <summary>
         /// 指定请求的目标
         /// </summary>
-        RequestAndResponseCode RequestCode { get; set; }
+        RequestCode RequestCode { get; set; }
         /// <summary>
         /// 行为码
         /// </summary>

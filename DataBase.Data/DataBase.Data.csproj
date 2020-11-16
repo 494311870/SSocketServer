@@ -173,6 +173,10 @@
     <Compile Include="Migrations\20201114090308_Initial.designer.cs">
       <DependentUpon>20201114090308_Initial.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\20201114094044_ChangeUser.cs" />
+    <Compile Include="Migrations\20201114094044_ChangeUser.designer.cs">
+      <DependentUpon>20201114094044_ChangeUser.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\DataContextModelSnapshot.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

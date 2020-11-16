@@ -12,34 +12,20 @@ namespace SServer.Common.Model
     public class Request : IRequest
     {
         public int Id { get; set; }
-        public RequestAndResponseCode RequestCode { get; set; }
+        public RequestCode RequestCode { get; set; }
         public ActionCode ActionCode { get; set; }
         //public object[] Data { get; set; }
         public string Json { get; set; }
 
-        public Request(int id, RequestAndResponseCode requestCode, ActionCode actionCode, string json)
-        {
-            Id = id;
-            RequestCode = requestCode;
-            ActionCode = actionCode;
-            //Data = data;
-            Json = json;
-        }
+        public Request(int id, RequestCode requestCode, ActionCode actionCode, string json) : this(requestCode, actionCode, json) => Id = id;
+        public Request(RequestCode requestCode, ActionCode actionCode, string json) : this(requestCode, actionCode) => Json = json;
+        public Request(RequestCode requestCode, ActionCode actionCode, object data) : this(requestCode, actionCode) => Json = JsonMapper.ToJson(data);
 
-        /// <summary>
-        /// 提供一个无需id的构造方法，id会由处理器进行处理，无需控制器处理
-        /// </summary>
-        /// <param name="requestCode"></param>
-        /// <param name="actionCode"></param>
-        /// <param name="json"></param>
-        public Request(RequestAndResponseCode requestCode, ActionCode actionCode, string json)
+        public Request(RequestCode requestCode, ActionCode actionCode)
         {
             RequestCode = requestCode;
             ActionCode = actionCode;
-            Json = json;
         }
-
-
 
         //public IRequest Create(RequestAndResponseCode requestCode, ActionCode actionCode, string json)
         //    => new Request(requestCode, actionCode, json);

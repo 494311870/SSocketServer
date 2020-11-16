@@ -123,18 +123,18 @@ namespace SServer.Common.Tools
 
             var typeCode = (byte)Protocol.TypeCode.Response;
             var id = BitConverter.GetBytes(response.Id);
-            var responseCode = BitConverter.GetBytes((short)response.ResponseCode);
+            //var responseCode = BitConverter.GetBytes((short)response.ResponseCode);
             var statusCode = BitConverter.GetBytes((short)response.StatusCode);
             //var dataBytes = Encoding.UTF8.GetBytes(JsonMapper.ToJson(response.Data));
             var dataBytes = Encoding.UTF8.GetBytes(response.Json);
 
-            var lengthBytes = BitConverter.GetBytes(1 + id.Length + responseCode.Length + statusCode.Length + dataBytes.Length);
+            var lengthBytes = BitConverter.GetBytes(1 + id.Length + statusCode.Length + dataBytes.Length);
             //Console.WriteLine("正在打包response");
             byteList.AddRange(lengthBytes);
 
             byteList.Add(typeCode); // 1
             byteList.AddRange(id); // 4
-            byteList.AddRange(responseCode); // 2
+            //byteList.AddRange(responseCode); // 2
             byteList.AddRange(statusCode); // 2
             byteList.AddRange(dataBytes);
 

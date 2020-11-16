@@ -14,7 +14,7 @@ namespace SServer.Common.Specification
         /// <summary>
         /// 指定响应的接受者
         /// </summary>
-        RequestAndResponseCode ResponseCode { get; set; }
+        //RequestCode ResponseCode { get; set; }
         /// <summary>
         /// 响应的状态码
         /// </summary>

@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 using SServer.Common.Protocol;
-namespace SSocketServer.Controller
+namespace SSocketServer.Attributes
 {
     /// <summary>
     /// 用于映射行为到自定义的方法

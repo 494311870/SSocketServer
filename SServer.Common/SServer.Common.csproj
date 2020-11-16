@@ -47,7 +47,7 @@
     <Compile Include="Model\Response.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Protocol\ActionCode.cs" />
-    <Compile Include="Protocol\RequestAndResponseCode.cs" />
+    <Compile Include="Protocol\RequestCode.cs" />
     <Compile Include="Protocol\StatusCode.cs" />
     <Compile Include="Protocol\TypeCode.cs" />
     <Compile Include="Specification\IClient.cs" />

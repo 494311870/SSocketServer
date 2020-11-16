@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 namespace SServer.Common.Protocol
 {
     /// <summary>
-    /// 请求和响应码
-    /// 几乎所有的请求都希望得到一个响应，我们为什么不共用一套协议来区分是哪个请求/响应呢？
+    /// 请求码 表面请求访问哪一个控制器
     /// </summary>
-    public enum RequestAndResponseCode : short
+    public enum RequestCode : short
     {
         None,
         Login,
+        Register,
     }
 }
