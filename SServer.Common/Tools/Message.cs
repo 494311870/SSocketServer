@@ -8,18 +8,15 @@ using LitJson;
 namespace SServer.Common.Tools
 {
     /// <summary>
-    /// 用于发送 请求和响应 
-    /// 0-3 标记内容长度 int32 4字节
+    /// 用于读取、打包 网络消息
     /// </summary>
     public class Message
     {
-
         private static readonly int BufferSize = 1024;
         /// <summary>
         /// 缓冲器
         /// </summary>
         public byte[] Buffer { get; } = new byte[BufferSize];
-
         /// <summary>
         /// 指针：指向缓冲器当前写入的位置
         /// </summary>
@@ -35,8 +32,8 @@ namespace SServer.Common.Tools
         /// <summary>
         /// 得到若干个完整的包，可以处理分包和粘包的情况
         /// </summary>
-        /// <param name="length">写入缓冲区的长度</param>
-        /// <returns></returns>
+        /// <param name="length"></param>
+        /// <param name="parse">解析方法</param>
         public void Read(int length, Func<byte[], Task> parse)
         {
             Current += length;
@@ -53,13 +50,14 @@ namespace SServer.Common.Tools
                 if (Current >= DataLength + 4)
                 {
                     ByteList.AddRange(Buffer.Skip(4).Take(DataLength));
-                    Current -= DataLength + 4;
-                    Array.Copy(Buffer, DataLength + 4, Buffer, 0, Current); // 手动移动缓冲区的数据
-                    // 调用解析方法处理读到消息
-                    Console.WriteLine("读到了一条完整的数据");
-                    parse(ByteList.ToArray());
-                    ByteList.Clear();
 
+                    Current -= DataLength + 4;
+                    // 手动移动缓冲区的数据
+                    Array.Copy(Buffer, DataLength + 4, Buffer, 0, Current);
+                    // 调用解析方法处理读到消息
+                    parse(ByteList.ToArray());
+
+                    ByteList.Clear();
                 }
                 else
                 {
@@ -77,13 +75,32 @@ namespace SServer.Common.Tools
             }
         }
 
-        // 将要发送的数据打包成Byte数组
-        public static byte[] GetBytes(string data)
+        private static byte[] GetBytes(IInformation information, params byte[][] other)
         {
-            var dataBytes = Encoding.UTF8.GetBytes(data);
-            var lengthBytes = BitConverter.GetBytes(dataBytes.Length);
-            return lengthBytes.Concat(dataBytes).ToArray();
+            var byteList = new List<byte>();
+            var typeCode = (byte)information.TypeCode;
+            var id = BitConverter.GetBytes(information.Id);
+            var message = Encoding.UTF8.GetBytes(information.Message ?? "");
+            var messageLength = BitConverter.GetBytes(message.Length);
+            var data = Encoding.UTF8.GetBytes(information.Json ?? "");
+            var length = 1 + id.Length + message.Length + messageLength.Length + data.Length;
+            // 处理传入的参数
+            length += other.Sum(x => x.Length);
+
+            byteList.AddRange(BitConverter.GetBytes(length));
+
+            byteList.Add(typeCode); // 1
+            byteList.AddRange(id); // 4
+
+            foreach (var item in other) { byteList.AddRange(item); }
+
+            byteList.AddRange(messageLength);
+            byteList.AddRange(message);
+            byteList.AddRange(data);
+
+            return byteList.ToArray();
         }
+
 
         /// <summary>
         /// 这里的话我们自己去处理request,也可以用json进行序列化反序列化，但是枚举类型需要自定义序列化，索性就自己写了。
@@ -92,55 +109,22 @@ namespace SServer.Common.Tools
         /// <returns></returns>
         public static byte[] GetBytes(IRequest request)
         {
-            var byteList = new List<byte>();
-
-            var typeCode = (byte)Protocol.TypeCode.Request;
-            var id = BitConverter.GetBytes(request.Id);
             var requestCode = BitConverter.GetBytes((short)request.RequestCode);
             var actionCode = BitConverter.GetBytes((short)request.ActionCode);
-            //var dataBytes = Encoding.UTF8.GetBytes(JsonMapper.ToJson(request.Data));
-            var dataBytes = Encoding.UTF8.GetBytes(request.Json);
 
-            var lengthBytes = BitConverter.GetBytes(1 + id.Length + requestCode.Length + actionCode.Length + dataBytes.Length);
-            //Console.WriteLine("正在打包request");
-            byteList.AddRange(lengthBytes);
-
-            byteList.Add(typeCode); // 1
-            byteList.AddRange(id); // 4
-            byteList.AddRange(requestCode); // 2
-            byteList.AddRange(actionCode); // 2
-            byteList.AddRange(dataBytes);
-
-            return byteList.ToArray();
-
-            
+            return GetBytes(request, requestCode, actionCode);
         }
 
-
+        /// <summary>
+        /// 将response转换为字节数组
+        /// </summary>
+        /// <param name="response"></param>
+        /// <returns></returns>
         public static byte[] GetBytes(IResponse response)
         {
-            var byteList = new List<byte>();
-
-            var typeCode = (byte)Protocol.TypeCode.Response;
-            var id = BitConverter.GetBytes(response.Id);
-            //var responseCode = BitConverter.GetBytes((short)response.ResponseCode);
             var statusCode = BitConverter.GetBytes((short)response.StatusCode);
-            //var dataBytes = Encoding.UTF8.GetBytes(JsonMapper.ToJson(response.Data));
-            var dataBytes = Encoding.UTF8.GetBytes(response.Json);
 
-            var lengthBytes = BitConverter.GetBytes(1 + id.Length + statusCode.Length + dataBytes.Length);
-            //Console.WriteLine("正在打包response");
-            byteList.AddRange(lengthBytes);
-
-            byteList.Add(typeCode); // 1
-            byteList.AddRange(id); // 4
-            //byteList.AddRange(responseCode); // 2
-            byteList.AddRange(statusCode); // 2
-            byteList.AddRange(dataBytes);
-
-            return byteList.ToArray();
+            return GetBytes(response, statusCode);
         }
-
-
     }
 }

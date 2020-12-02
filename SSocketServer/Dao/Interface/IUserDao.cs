@@ -10,7 +10,7 @@ namespace SSocketServer.Dao
     interface IUserDao
     {
         bool Add(User user);
-
+        bool CheckUsername(string username);
         User VerifyUser(string username, string password); // 验证用户名密码
     }
 }

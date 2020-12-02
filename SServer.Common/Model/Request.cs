@@ -1,33 +1,43 @@
-﻿using System.Collections.Generic;
-
+﻿using LitJson;
 using SServer.Common.Protocol;
 using SServer.Common.Specification;
 using System;
-using System.Runtime.Serialization;
-using LitJson;
 
 namespace SServer.Common.Model
 {
+    /// <summary>
+    /// 网络请求
+    /// </summary>
     [Serializable]
-    public class Request : IRequest
+    public class Request :Information, IRequest
     {
-        public int Id { get; set; }
+        /// <summary>
+        /// 信息的类别
+        /// </summary>
+        public override Protocol.TypeCode TypeCode => Protocol.TypeCode.Request;
+        /// <summary>
+        /// 请求码
+        /// </summary>
         public RequestCode RequestCode { get; set; }
+        /// <summary>
+        /// 请求的行为码
+        /// </summary>
         public ActionCode ActionCode { get; set; }
-        //public object[] Data { get; set; }
-        public string Json { get; set; }
-
-        public Request(int id, RequestCode requestCode, ActionCode actionCode, string json) : this(requestCode, actionCode, json) => Id = id;
-        public Request(RequestCode requestCode, ActionCode actionCode, string json) : this(requestCode, actionCode) => Json = json;
-        public Request(RequestCode requestCode, ActionCode actionCode, object data) : this(requestCode, actionCode) => Json = JsonMapper.ToJson(data);
-
+        /// <summary>
+        /// 创建一个Request对象
+        /// </summary>
+        public Request(RequestCode requestCode, ActionCode actionCode, object data) 
+            : this(requestCode, actionCode) 
+            => Json = JsonMapper.ToJson(data);
+        /// <summary>
+        /// 创建一个Request对象
+        /// </summary>
+        /// <param name="requestCode"></param>
+        /// <param name="actionCode"></param>
         public Request(RequestCode requestCode, ActionCode actionCode)
         {
             RequestCode = requestCode;
             ActionCode = actionCode;
         }
-
-        //public IRequest Create(RequestAndResponseCode requestCode, ActionCode actionCode, string json)
-        //    => new Request(requestCode, actionCode, json);
     }
 }

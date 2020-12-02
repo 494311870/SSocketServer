@@ -20,6 +20,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\SServer.Common.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -43,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Model\Information.cs" />
     <Compile Include="Model\Request.cs" />
     <Compile Include="Model\Response.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -51,8 +53,10 @@
     <Compile Include="Protocol\StatusCode.cs" />
     <Compile Include="Protocol\TypeCode.cs" />
     <Compile Include="Specification\IClient.cs" />
+    <Compile Include="Specification\IInformation.cs" />
     <Compile Include="Specification\IRequest.cs" />
     <Compile Include="Specification\IResponse.cs" />
+    <Compile Include="Tools\Log.cs" />
     <Compile Include="Tools\Message.cs" />
     <Compile Include="Tools\Parser.cs" />
   </ItemGroup>

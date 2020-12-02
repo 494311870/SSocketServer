@@ -9,22 +9,28 @@ using LitJson;
 
 namespace SServer.Common.Model
 {
+    /// <summary>
+    /// 网络响应
+    /// </summary>
     [Serializable]
-    public class Response : IResponse
+    public class Response : Information, IResponse
     {
-        public int Id { get; set; }
-        //public RequestCode ResponseCode { get; set; }
+        /// <summary>
+        /// 信息的类别
+        /// </summary>
+        public override Protocol.TypeCode TypeCode => Protocol.TypeCode.Response;
+        /// <summary>
+        /// 响应的状态码
+        /// </summary>
         public StatusCode StatusCode { get; set; }
-        //public object[] Data { get; set; }
-        public string Json { get; set; }
-
-        public Response(int id, StatusCode statusCode, string json) : this(statusCode, json) => Id = id;
-        public Response(StatusCode statusCode, string json) : this(statusCode) => Json = json;
-        public Response(StatusCode statusCode, object data) : this(statusCode) => Json = JsonMapper.ToJson(data);
-
+        /// <summary>
+        /// 创建一个Response对象
+        /// </summary>
+        public Response(StatusCode statusCode, object data) : this(statusCode) 
+            => Json = JsonMapper.ToJson(data);
+        /// <summary>
+        /// 创建一个Response对象
+        /// </summary>
         public Response(StatusCode statusCode) => StatusCode = statusCode;
-
-        //public IResponse Create(RequestAndResponseCode responseCode, StatusCode statusCode, string json)
-        //    => new Response(responseCode, statusCode, json);
     }
 }

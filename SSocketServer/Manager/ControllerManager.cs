@@ -8,6 +8,9 @@ using SServer.Common.Specification;
 using System.Reflection;
 using SSocketServer.Controller;
 using SSocketServer.Attributes;
+using SServer.Common.Model;
+using SSocketServer.Servers;
+using SServer.Common.Tools;
 
 namespace SSocketServer.Manager
 {
@@ -16,9 +19,8 @@ namespace SSocketServer.Manager
     /// </summary>
     class ControllerManager
     {
-
         private Dictionary<RequestCode, BaseController> ControllerDict { get; } = new Dictionary<RequestCode, BaseController>();
-        public Type RequestMappingAttributeType { get; } = typeof(RequestMappingAttribute);
+
 
         public ControllerManager() => Init();
 
@@ -27,10 +29,9 @@ namespace SSocketServer.Manager
             // TODO
             Add(new DefaultController());
             Add(new LoginController());
-            foreach (var item in ControllerDict.Keys)
-            {
-                Console.WriteLine(item);
-            }
+            Add(new RegisterController());
+            Add(new RoomController());
+
         }
         /// <summary>
         /// 添加一个控制器
@@ -45,7 +46,6 @@ namespace SSocketServer.Manager
         /// <returns></returns>
         public IResponse RequestHandler(IRequest request)
         {
-            Console.WriteLine(request.RequestCode);
             if (ControllerDict.TryGetValue(request.RequestCode, out BaseController controller))
             {
                 var controllerType = controller.GetType();
@@ -53,33 +53,52 @@ namespace SSocketServer.Manager
                 // 找到行为映射的方法
                 foreach (var method in methods)
                 {
-                    var attributes = method.GetCustomAttributes(RequestMappingAttributeType, false);
+                    var attributes = method.GetCustomAttributes(typeof(RequestMappingAttribute), false);
                     if (attributes.Any())
                     {
                         if ((attributes.First() as RequestMappingAttribute).ActionCode.Equals(request.ActionCode))
                         {
-                            var response = method.Invoke(controller, new object[] { request.Json }) as IResponse;
-                            response.Id = request.Id;
-                            return response;
+                            try
+                            {
+                                var response = method.Invoke(controller, new object[] { request }) as IResponse;
+                                response.Id = request.Id;
+                                return response;
+                            }
+                            catch (Exception e)
+                            {
+                                Server.Instance.Logger.Log($"在处理[{request.RequestCode}][{request.ActionCode}]时发生了错误:/n{e}", LogLevel.Error);
+#if DEBUG
+                                return new Response(StatusCode.InternalServerError) { Id = request.Id, Message = $"在处理[{request.RequestCode}][{request.ActionCode}]时发生了错误" };
+#else
+                                return new Response(StatusCode.InternalServerError) { Id = request.Id, Message = $"服务器遇到错误，无法完成请求" };
+#endif
+                            }
+                            finally
+                            {
+
+                            }
                         }
                     }
                 }
-                Console.WriteLine($"[警告]在Controller[{controller.ToString()}]中没有对应的处理方法：[{request.ActionCode}]");
+                Server.Instance.Logger.Log($"在Controller[{controller.ToString()}]中没有对应的处理方法：[{request.ActionCode}]", LogLevel.Warn);
+                return new Response(StatusCode.MethodNotAllowed, new { Message = $"[{request.RequestCode}][{request.ActionCode}]是不被允许的请求" });
+
+
             }
             else
             {
-                Console.WriteLine($"[警告]请求[{request.RequestCode}]未找到请求对应的处理器！");
+                Server.Instance.Logger.Log($"[警告][{request.RequestCode}]未找到对应的处理器！", LogLevel.Warn);
+                return new Response(StatusCode.BadRequest, new { Message = $"[{request.RequestCode}][{request.ActionCode}]是错误的请求" });
             }
 
-            return null;
 
         }
 
+
+
         public void ResponseHandler(IResponse response)
         {
-            Console.WriteLine("处理器进行了处理！");
-            // TODO:对响应进行处理,然后再由服务器负责发送
-
+            // TODO:对响应进行处理
         }
     }
 }

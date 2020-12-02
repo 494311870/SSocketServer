@@ -17,6 +17,5 @@ namespace DataBase.Domain
         public string Password { get; set; }
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public DateTime RegisterDate { get; set; }
-
     }
 }

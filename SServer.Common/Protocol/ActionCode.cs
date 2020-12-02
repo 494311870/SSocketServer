@@ -12,6 +12,9 @@ namespace SServer.Common.Protocol
     /// </summary>
     public enum ActionCode : short
     {
+        /// <summary>
+        /// 默认值
+        /// </summary>
         None,
         /// <summary>
         /// 查询 从服务器获取资源   

@@ -11,6 +11,9 @@ namespace SServer.Common.Protocol
     /// </summary>
     public enum TypeCode : byte
     {
+        /// <summary>
+        /// 默认值
+        /// </summary>
         None,
         /// <summary>
         /// 请求

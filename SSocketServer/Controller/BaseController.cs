@@ -10,13 +10,10 @@ namespace SSocketServer.Controller
 {
     abstract class BaseController
     {
-        public RequestCode ProtocolCode { get; set; }
+        public abstract RequestCode ProtocolCode { get;}
         /// <summary>
         /// 提供一个默认的虚方法
         /// </summary>
-        public virtual IResponse DefaultHandle(string json) => null;
-
-        
-
+        //public virtual IResponse DefaultHandle(string json) => null;
     }
 }

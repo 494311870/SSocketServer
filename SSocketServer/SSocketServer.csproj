@@ -129,26 +129,32 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Attributes\AutowiredAttribute.cs" />
+    <Compile Include="Attributes\ServiceAttribute.cs" />
     <Compile Include="Controller\BaseController.cs" />
+    <Compile Include="Controller\RoomController.cs" />
     <Compile Include="Manager\ControllerManager.cs" />
     <Compile Include="Controller\DefaultController.cs" />
     <Compile Include="Controller\LoginController.cs" />
     <Compile Include="Controller\RegisterController.cs" />
     <Compile Include="Attributes\RequestMappingAttribute.cs" />
-    <Compile Include="Dao\IUserDao.cs" />
+    <Compile Include="Dao\Interface\IUserDao.cs" />
     <Compile Include="Dao\UserDao.cs" />
+    <Compile Include="Middleware\ResponseMiddleware.cs" />
+    <Compile Include="Middleware\RequestMiddleware.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Servers\Client.cs" />
+    <Compile Include="Servers\Room.cs" />
     <Compile Include="Servers\Server.cs" />
+    <Compile Include="Service\Interface\IRoomService.cs" />
+    <Compile Include="Service\RoomService.cs" />
     <Compile Include="SGameServer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Service\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\DataBase.Data\DataBase.Data.csproj">
       <Project>{ef5e3537-8c45-4937-a13d-b082c9c624ba}</Project>

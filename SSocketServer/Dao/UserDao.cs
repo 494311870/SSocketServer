@@ -15,6 +15,17 @@ namespace SSocketServer.Dao
             }
         }
 
+        public bool CheckUsername(string username)
+        {
+            using (var context = new DataContext())
+            {
+                var user = context.Users
+                    .Where(x => x.Username.Equals(username))
+                    .SingleOrDefault();
+                return user is null; 
+            }
+        }
+
         public User VerifyUser(string username, string password)
         {
             using (var context = new DataContext())

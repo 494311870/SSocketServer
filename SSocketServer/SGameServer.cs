@@ -13,6 +13,7 @@ namespace SSocketServer
         static void Main(string[] args)
         {
             Server server = new Server("127.0.0.1", 9966);
+            Console.WriteLine("??");
             server.Run("服务器运行起来了！");
 
 
