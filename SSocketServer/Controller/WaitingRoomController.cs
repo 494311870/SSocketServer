@@ -4,15 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SServer.Common.Protocol;
+using SSocketServer.Attributes;
 
 namespace SSocketServer.Controller
 {
-    class DefaultController : BaseController
+    [Controller]
+    class WaitingRoomController : BaseController
     {
-        public override RequestCode RequestCode => RequestCode.None;
-
-        public override string ToString() => "Default";
-
-
+        public override RequestCode RequestCode => RequestCode.WaitingRoom;
     }
 }

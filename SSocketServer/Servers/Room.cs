@@ -54,14 +54,14 @@ namespace SSocketServer.Servers
             roomName = RoomName;
         }
 
-        public void Init(Client client, int number, int numberMax, string roomName, string password)
+        public void Init(Client client, int number, int numberMax, string roomName, string password = null)
         {
             Clients.Clear();
             Host = client;
             AddClient(Host);
             RoomState = RoomState.WaitingJoin;
-            NumberMax = numberMax;
             Number = number;
+            NumberMax = numberMax;
             RoomName = roomName;
             Password = password;
         }
@@ -76,7 +76,7 @@ namespace SSocketServer.Servers
         void RemoveClient(Client client)
         {
             Clients.Remove(client);
-            // TODO 向房间内的玩家进行一次广播，刷新他们的面板以显示新玩家
+            // TODO 向房间内的玩家进行一次广播，刷新他们的面板以移除离开的玩家
         }
 
         // 获取房间内的玩家列表

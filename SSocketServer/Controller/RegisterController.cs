@@ -13,11 +13,13 @@ using SSocketServer.Attributes;
 
 namespace SSocketServer.Controller
 {
+    [Controller]
     class RegisterController : BaseController
     {
-        public override RequestCode ProtocolCode => RequestCode.Register;
+        public override RequestCode RequestCode => RequestCode.Register;
+        public override string ToString() => "Register";
 
-        public UserDao UserDao { get; set; } = new UserDao();
+        [Autowired] public IUserDao UserDao { get; set; }
 
         
 

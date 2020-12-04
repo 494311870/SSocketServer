@@ -1,9 +1,11 @@
 ﻿using System.Linq;
 using DataBase.Data;
 using DataBase.Domain;
+using SSocketServer.Attributes;
 
 namespace SSocketServer.Dao
 {
+    [Dao]
     public class UserDao : IUserDao
     {
         public bool Add(User user)

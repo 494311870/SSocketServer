@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 namespace SSocketServer.Attributes
 {
     /// <summary>
-    /// 标记为服务
+    /// 标记为Dao
     /// </summary>
     [AttributeUsage(AttributeTargets.Class)]
-    class ServiceAttribute : Attribute
+    class DaoAttribute : Attribute
     {
-
+        
     }
 }

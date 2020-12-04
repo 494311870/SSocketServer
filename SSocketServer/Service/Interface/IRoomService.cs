@@ -10,6 +10,7 @@ namespace SSocketServer.Service
     interface IRoomService
     {
         Room CreateRoom();
+        IEnumerable<Room> AllRoom();
 
     }
 }

@@ -27,5 +27,9 @@ namespace SServer.Common.Protocol
         /// 房间
         /// </summary>
         Room,
+        /// <summary>
+        /// 等待房间
+        /// </summary>
+        WaitingRoom,
     }
 }

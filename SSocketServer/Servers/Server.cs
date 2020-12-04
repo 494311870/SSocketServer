@@ -2,6 +2,7 @@
 using SServer.Common.Tools;
 using SSocketServer.Manager;
 using SSocketServer.Middleware;
+using SSocketServer.Util.Log;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,6 +43,7 @@ namespace SSocketServer.Servers
         /// </summary>
         protected Queue<Room> FreeRooms { get; set; } = new Queue<Room>();
         protected HashSet<Room> UsingRooms { get; set; } = new HashSet<Room>();
+        public IEnumerable<Room> AllRooms => UsingRooms.AsEnumerable();
 
         protected ControllerManager ControllerManager { get; } = new ControllerManager();
         protected Parser Parser { get; set; }
@@ -90,20 +92,24 @@ namespace SSocketServer.Servers
             RequestMiddleware = new RequestMiddleware(this);
             ResponseMiddleware = new ResponseMiddleware(this);
             // 初始化连接池 与最大连接数保持一致
-            for (int i = 0; i < MaxConnection; i++)
-            {
+            foreach (var i in Enumerable.Range(0, MaxConnection))
                 FreeClients.Enqueue(new Client(this));
-            }
             // 初始化房间
-            for (int i = 0; i < MaxRoomNumbers; i++)
-            {
+            foreach (var i in Enumerable.Range(0, MaxRoomNumbers))
                 FreeRooms.Enqueue(new Room(i));
-            }
+
             Logger.Log($"初始化了{FreeClients.Count}个对等客户端");
             // 设置请求队列的最大值
             Listener.Start(MaxConnection);
             Logger.Log(message);
-            //Console.WriteLine(message.PadLeft(15 + message.Length / 2, '-').PadRight(30, '-'));
+            // Test
+            for (int i = 1; i < 3; i++)
+            {
+                var room = GetRoom();
+                room.Init(GetClient(), i, i * 2, $"TestRoom{i}");
+            }
+
+            //
             // 异步接受客户端连接请求
             await AcceptAsync();
         }
@@ -111,20 +117,19 @@ namespace SSocketServer.Servers
         private async Task AcceptAsync()
         {
             Socket socket = await Listener.AcceptSocketAsync();
-            Console.WriteLine($"{Thread.CurrentThread.ManagedThreadId}:一个客户端连接进来了！{socket.RemoteEndPoint.ToString()}");
+            Logger.Log($"一个客户端连接进来了！{socket.RemoteEndPoint}");
 
             Client client = GetClient();
             if (client is null)
             {
                 socket.Close();
-                Console.WriteLine("无可用连接");
+                Logger.Log("无可用连接", LogLevel.Warn);
             }
             else
             {
                 client.Use(socket);
             }
-            Console.WriteLine($"剩余可用数量:{FreeClients.Count}");
-            //Console.WriteLine($"{Thread.CurrentThread.ManagedThreadId}:剩余可用数量：{ClientList.Count(x => x.CanUse)}");
+            Logger.Log($"剩余可用数量:{FreeClients.Count}");
             await AcceptAsync();
         }
         #region 管理客户端
@@ -178,6 +183,8 @@ namespace SSocketServer.Servers
 
             lock (FreeRooms) { FreeRooms.Enqueue(room); }
         }
+
+
         #endregion
 
 
@@ -188,19 +195,20 @@ namespace SSocketServer.Servers
 
             void RequestHandle()
             {
+                // 请求中间件
                 RequestMiddleware.BeforeWrapper(request);
-                Console.WriteLine(request.Id);
-
+                // 让控制器管理者去处理请求
                 var response = ControllerManager.RequestHandler(request);
-
+                // 响应中间件
                 ResponseMiddleware.AfterWrapper(response);
-
+                // 向客户端发送响应
                 request.Client.SendMessage(Message.GetBytes(response));
             }
         }
 
         private async Task ResponseHandleAsync(IResponse response)
         {
+            // TODO 
             await Task.Run(() =>
             {
                 ControllerManager.ResponseHandler(response);
@@ -209,12 +217,9 @@ namespace SSocketServer.Servers
 
         public void Parse(byte[] bytes, IClient client)
         {
-            Console.WriteLine("服务器解析了一条数据");
+            Logger.Log("服务器解析了一条数据");
             Parser.Parse(bytes, client);
         }
         #endregion
-
-
-
     }
 }

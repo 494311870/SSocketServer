@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using SSocketServer.Servers;
 using LitJson;
+using System.Configuration;
+using SSocketServer.Util.Container;
 
 namespace SSocketServer
 {
@@ -27,11 +29,13 @@ namespace SSocketServer
                         break;
                 }
             }
-
-
-
-
+            //SContainer.Test();
 
         }
+    }
+
+    class MyClass
+    {
+
     }
 }

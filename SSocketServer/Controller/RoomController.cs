@@ -9,39 +9,60 @@ using LitJson;
 using SSocketServer.Servers;
 using SSocketServer.Attributes;
 using SServer.Common.Model;
+using SSocketServer.Service;
 
 namespace SSocketServer.Controller
 {
+    [Controller]
     class RoomController : BaseController
     {
-        public override RequestCode ProtocolCode => RequestCode.Room;
+        public override RequestCode RequestCode => RequestCode.Room;
 
+        [Autowired] private IRoomService RoomService { get; set; }
+        /// <summary>
+        /// 创建房间
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
         [RequestMapping(ActionCode.Post)]
-        public IResponse CreateRomm(Request request)
+        public IResponse CreateRoom(Request request)
         {
-            //var data = JsonMapper.ToObject<(int numberMax, string roomName, string password)>(request.Json);
             var data = request.GetData<(int numberMax, string roomName, string password)>();
-            //var data = JsonMapper.ToObject(json);
-            var room = Server.Instance.GetRoom();
-
-
-            //room.Init(request.Client as Client, (int)request.Data["Number"], request.Data["NumberMax"], request.Data["IsLocked"], request.Data["RoomName"]);
+            var room = RoomService.CreateRoom();
 
             if (room != null)
             {
-                //room.Create();
                 room.Init(request.Client as Client, 1, data.numberMax, data.roomName, data.password);
+
                 var (id, number, numberMax, isLocked, roomName) = room;
 
                 return new Response(StatusCode.Created, (id, number, numberMax, isLocked, roomName)) { Message = "创建成功" };
-                //return new Response(StatusCode.Created, new
-                //{
-                //    Message = "创建成功！",
-                //    Room = (id, number, numberMax, isLocked, roomName),
-                //});
             }
 
-            return new Response(StatusCode.ServiceUnavailable, new { Message = "服务器房间数量已达到上限" });
+            return new Response(StatusCode.ServiceUnavailable) { Message = "服务器房间数量已达到上限" };
+        }
+        /// <summary>
+        /// 获取房间列表
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        // 这个可以做分页查询和条件过滤，暂时用不到就不做了
+        [RequestMapping(ActionCode.Get)]
+        public IResponse GetRoomList(Request request)
+        {
+            var roomList = new List<(int id, int number, int numberMax, bool isLocked, string roomName)>();
+            int id;
+            int number;
+            int numberMax;
+            bool isLocked;
+            string roomName;
+
+            foreach (var room in RoomService.AllRoom())
+            {
+                roomList.Add((id, number, numberMax, isLocked, roomName) = room);
+            }
+
+            return new Response(StatusCode.Created, roomList);
         }
     }
 }

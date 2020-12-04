@@ -16,6 +16,10 @@ namespace DataBase.Domain
         [Required, MaxLength(20)]
         public string Password { get; set; }
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public DateTime RegisterDate { get; set; }
+        public DateTime RegisterDate { get; set; } 
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public DateTime LastLogin { get; set; }
+
+        public HashSet<Player> Players { get; set; }
     }
 }
